@@ -4,17 +4,16 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 
-
 app.use(express.json());
 
 console.log("starting...");
 
-app.get("/posts", (req, res) => {
+app.get("/posts", authenticateToken(req, res), (req, res) => {
+  res.json(posts.filter((post) => post.username == req.user.name));
   res.send("hello World");
 });
 
 app.post("/login", (req, res) => {
-    console.log('req 👉 ', req.body)
   // Athenticate User
   const username = req.body.username;
   const user = { name: username };
@@ -22,5 +21,17 @@ app.post("/login", (req, res) => {
 
   res.json({ accessToken: accessToken });
 });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.splite(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
 
 app.listen(3005);
