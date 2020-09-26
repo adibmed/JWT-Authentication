@@ -4,6 +4,9 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 
+
+app.use(express.json());
+
 console.log("starting...");
 
 app.get("/posts", (req, res) => {
