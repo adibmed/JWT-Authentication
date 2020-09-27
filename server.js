@@ -4,22 +4,22 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 
+// Confi App
 app.use(express.json());
 
-console.log("starting...");
+const posts = [
+  {
+    username: "Adibe",
+    title: "Building Tools",
+  },
+  {
+    username: "Elon",
+    title: "Building Rockets",
+  },
+];
 
-app.get("/posts", authenticateToken(req, res), (req, res) => {
+app.get("/posts", authenticateToken, (req, res) => {
   res.json(posts.filter((post) => post.username == req.user.name));
-  res.send("hello World");
-});
-
-app.post("/login", (req, res) => {
-  // Athenticate User
-  const username = req.body.username;
-  const user = { name: username };
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-
-  res.json({ accessToken: accessToken });
 });
 
 function authenticateToken(req, res, next) {
